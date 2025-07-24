@@ -1,9 +1,8 @@
 # models/Makefile
 include common.mk
 
-MODEL ?= deepseek-r1-qwen7b
+MODEL ?= mythomax-l2-13b
 MODEL_FILE ?= $(MODEL)/model.gguf
-PROMPT ?= prompts/eval.txt
 
 # Per-model overrides if present
 -include $(MODEL)/params.mk
@@ -13,7 +12,7 @@ PROMPT ?= prompts/eval.txt
 chat: $(MODEL_FILE)
 	llama-cli \
 	  -m $(MODEL_FILE) \
-	  -p "$$(cat $(PROMPT))" \
+	  -i \
 	  -t $(THREADS) -c $(CTX) -b $(BATCH) -ngl $(NGL) \
 	  --temp $(TEMP) --top-k $(TOPK) --top-p $(TOPP) --seed $(SEED)
 
@@ -27,11 +26,10 @@ bench: $(MODEL_FILE)
 	llama-cli \
 	  -m $(MODEL_FILE) \
 	  -t $(THREADS) -c $(CTX) -b $(BATCH) -ngl $(NGL) \
-	  --prompt "Benchmarking..." \
 	  --n-predict 512 --temp 0 --repeat_penalty 1
 
 list:
-	@find . -maxdepth 1 -mindepth 1 -type d ! -name "prompts" ! -name ".git" \
+	@find . -maxdepth 1 -mindepth 1 -type d ! -name ".git" \
 	 | sed 's|^\./||' | sort
 
 clean:
@@ -45,3 +43,7 @@ qwen2.5-7b-instruct/model.gguf:
 deepseek-r1-qwen7b/model.gguf:
 	@mkdir -p deepseek-r1-qwen7b
 	wget -O $@ https://huggingface.co/bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF/resolve/main/DeepSeek-R1-Distill-Qwen-7B-Q4_K_M.gguf
+
+mythomax-l2-13b/model.gguf:
+	@mkdir -p mythomax-l2-13b
+	wget -O $@ https://huggingface.co/TheBloke/MythoMax-L2-13B-GGUF/resolve/main/mythomax-l2-13b.Q4_K_M.gguf
