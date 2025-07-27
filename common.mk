@@ -10,4 +10,4 @@ TOPK    ?= 40
 TOPP    ?= 0.95
 SEED    ?= -1
 PORT    ?= 8080
-NGL     ?= 0         # CPU-only for now; check ROCm for AMD GPU later
+NGL     ?= 40        # GPU layers for RX 7900 XTX (24GB VRAM)
