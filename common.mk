@@ -1,4 +1,4 @@
-LLAMA_CLI    ?= /opt/llama.cpp/llama-cli
+LLAMA_CLI    ?= llama-cli
 LLAMA_SERVER ?= /opt/llama.cpp/llama-server
 
 # Tuned for Ryzen 7 9700X (16 threads) + 60GB RAM
