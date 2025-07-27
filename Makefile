@@ -26,7 +26,9 @@ bench: $(MODEL_FILE)
 	HIP_VISIBLE_DEVICES=0 llama-cli \
 	  -m $(MODEL_FILE) \
 	  -t $(THREADS) -c $(CTX) -b $(BATCH) -ngl $(NGL) \
-	  --n-predict 512 --temp 0 --repeat_penalty 1
+	  --n-predict 512 --temp 0 --repeat_penalty 1.0 \
+	  -p "Write a detailed explanation of machine learning in 512 tokens." \
+	  --no-conversation --verbose
 
 list:
 	@find . -maxdepth 1 -mindepth 1 -type d ! -name ".git" \
