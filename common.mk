@@ -1,5 +1,5 @@
 LLAMA_CLI    ?= llama-cli
-LLAMA_SERVER ?= /opt/llama.cpp/llama-server
+LLAMA_SERVER ?= llama-server
 
 # Tuned for Ryzen 7 9700X (16 threads) + 60GB RAM
 THREADS ?= 14        # leave 2 threads for system
@@ -11,3 +11,8 @@ TOPP    ?= 0.95
 SEED    ?= -1
 PORT    ?= 8080
 NGL     ?= 40        # GPU layers for RX 7900 XTX (24GB VRAM)
+
+# Optimization flags
+FLASH_ATTN   ?= --flash-attn
+SPLIT_MODE   ?= --split-mode layer
+BENCH_PROMPT ?= "def merge_sort(arr):"
