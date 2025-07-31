@@ -1,7 +1,7 @@
 # models/Makefile
 include common.mk
 
-MODEL ?= qwen3-32b
+MODEL ?= qwen3-30b-a3b-instruct-2507
 MODEL_FILE ?= $(MODEL)/model.gguf
 
 # Per-model overrides if present
@@ -71,3 +71,11 @@ qwen2.5-coder-32b-instruct-q6k/model.gguf:
 qwen3-32b/model.gguf:
 	@mkdir -p qwen3-32b
 	wget -O $@ https://huggingface.co/bartowski/Qwen_Qwen3-32B-GGUF/resolve/main/Qwen_Qwen3-32B-Q4_K_M.gguf
+
+qwen3-30b-a3b/model.gguf:
+	@mkdir -p qwen3-30b-a3b
+	wget -O $@ https://huggingface.co/bartowski/Qwen_Qwen3-30B-A3B-GGUF/resolve/main/Qwen_Qwen3-30B-A3B-Q4_K_M.gguf
+
+qwen3-30b-a3b-instruct-2507/model.gguf:
+	@mkdir -p qwen3-30b-a3b-instruct-2507
+	wget -O $@ https://huggingface.co/unsloth/Qwen3-30B-A3B-Instruct-2507-GGUF/resolve/main/Qwen3-30B-A3B-Instruct-2507-Q4_K_M.gguf
