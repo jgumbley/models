@@ -1,7 +1,7 @@
 # models/Makefile
 include common.mk
 
-MODEL ?= qwen3-30b-a3b-instruct-2507
+MODEL ?= qwen3-coder-30b-a3b-instruct
 MODEL_FILE ?= $(MODEL)/model.gguf
 
 # Per-model overrides if present
@@ -10,7 +10,7 @@ MODEL_FILE ?= $(MODEL)/model.gguf
 .PHONY: chat serve bench list clean
 
 chat: $(MODEL_FILE)
-	HIP_VISIBLE_DEVICES=0 $(LLAMA_CLI) \
+	HSA_OVERRIDE_GFX_VERSION=11.0.0 HIP_VISIBLE_DEVICES=0 GPU_DEVICE_ORDINAL=0 $(LLAMA_CLI) \
 	  -m $(MODEL_FILE) \
 	  -i \
 	  -t $(THREADS) -c $(CTX) -b $(BATCH) -ngl $(NGL) \
@@ -18,7 +18,7 @@ chat: $(MODEL_FILE)
 	  $(FLASH_ATTN) $(SPLIT_MODE)
 
 serve: $(MODEL_FILE)
-	HIP_VISIBLE_DEVICES=0 $(LLAMA_SERVER) \
+	HSA_OVERRIDE_GFX_VERSION=11.0.0 HIP_VISIBLE_DEVICES=0 GPU_DEVICE_ORDINAL=0 $(LLAMA_SERVER) \
 	  -m $(MODEL_FILE) \
 	  -t $(THREADS) -c $(CTX) -b $(BATCH) -ngl $(NGL) \
 	  --host 0.0.0.0 --port $(PORT) \
@@ -26,7 +26,7 @@ serve: $(MODEL_FILE)
 
 bench: $(MODEL_FILE)
 	@echo "=== Benchmarking tokens/sec for $(MODEL) ==="
-	HIP_VISIBLE_DEVICES=0 $(LLAMA_CLI) \
+	HSA_OVERRIDE_GFX_VERSION=11.0.0 HIP_VISIBLE_DEVICES=0 GPU_DEVICE_ORDINAL=0 $(LLAMA_CLI) \
 	  -m $(MODEL_FILE) \
 	  -p $(BENCH_PROMPT) -n 512 -t $(THREADS) --temp $(TEMP) -s 1 --ctx-size $(CTX) \
 	  -ngl $(NGL) --top-k $(TOPK) --top-p $(TOPP) \
@@ -79,3 +79,7 @@ qwen3-30b-a3b/model.gguf:
 qwen3-30b-a3b-instruct-2507/model.gguf:
 	@mkdir -p qwen3-30b-a3b-instruct-2507
 	wget -O $@ https://huggingface.co/unsloth/Qwen3-30B-A3B-Instruct-2507-GGUF/resolve/main/Qwen3-30B-A3B-Instruct-2507-Q4_K_M.gguf
+
+qwen3-coder-30b-a3b-instruct/model.gguf:
+	@mkdir -p qwen3-coder-30b-a3b-instruct
+	wget -O $@ https://huggingface.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/resolve/main/Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf
