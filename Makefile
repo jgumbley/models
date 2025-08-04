@@ -1,7 +1,7 @@
 # models/Makefile
 include common.mk
 
-MODEL ?= qwen3-coder-30b-a3b-instruct
+MODEL ?= qwen3-30b-a3b-instruct-2507
 MODEL_FILE ?= $(MODEL)/model.gguf
 
 # Per-model overrides if present
@@ -14,7 +14,7 @@ chat: $(MODEL_FILE)
 	  -m $(MODEL_FILE) \
 	  -i \
 	  -t $(THREADS) -c $(CTX) -b $(BATCH) -ngl $(NGL) \
-	  --temp $(TEMP) --top-k $(TOPK) --top-p $(TOPP) --seed $(SEED) \
+	  --temp $(TEMP) --top-k $(TOPK) --top-p $(TOPP) --min-p $(MINP) --seed $(SEED) \
 	  $(FLASH_ATTN) $(SPLIT_MODE)
 
 serve: $(MODEL_FILE)
@@ -22,14 +22,16 @@ serve: $(MODEL_FILE)
 	  -m $(MODEL_FILE) \
 	  -t $(THREADS) -c $(CTX) -b $(BATCH) -ngl $(NGL) \
 	  --host 0.0.0.0 --port $(PORT) \
-	  $(FLASH_ATTN) $(SPLIT_MODE)
+	  --reverse-prompt "<|im_end|>" --reverse-prompt "</tool_call>" \
+	  --repeat-penalty 1.05 --min-p 0.0 \
+	  $(FLASH_ATTN) $(SPLIT_MODE) 2>&1 | tee serve.log
 
 bench: $(MODEL_FILE)
 	@echo "=== Benchmarking tokens/sec for $(MODEL) ==="
 	HSA_OVERRIDE_GFX_VERSION=11.0.0 HIP_VISIBLE_DEVICES=0 GPU_DEVICE_ORDINAL=0 $(LLAMA_CLI) \
 	  -m $(MODEL_FILE) \
 	  -p $(BENCH_PROMPT) -n 512 -t $(THREADS) --temp $(TEMP) -s 1 --ctx-size $(CTX) \
-	  -ngl $(NGL) --top-k $(TOPK) --top-p $(TOPP) \
+	  -ngl $(NGL) --top-k $(TOPK) --top-p $(TOPP) --min-p $(MINP) \
 	  $(FLASH_ATTN) $(SPLIT_MODE) --no-conversation
 
 list:
