@@ -24,7 +24,7 @@ serve: $(MODEL_FILE)
 	  --host 0.0.0.0 --port $(PORT) \
 	  --reverse-prompt "<|im_end|>" --reverse-prompt "</tool_call>" \
 	  --repeat-penalty 1.05 --min-p 0.0 \
-	  $(FLASH_ATTN) $(SPLIT_MODE) 2>&1 | tee serve.log
+	  $(FLASH_ATTN) $(SPLIT_MODE) 2>&1 | tee serve.log | grep -E "^(main: (HTTP server is listening|model loaded|server is listening)|srv.*slots.*idle)"
 
 bench: $(MODEL_FILE)
 	@echo "=== Benchmarking tokens/sec for $(MODEL) ==="
