@@ -8,7 +8,7 @@ MODEL_FILE ?= $(MODEL)/model.gguf
 # Per-model overrides if present
 -include $(MODEL)/params.mk
 
-.PHONY: chat serve bench list clean mytho mytho-serve model
+.PHONY: chat serve bench list clean mytho mytho-serve model inference claude
 
 chat: $(MODEL_FILE)
 	HSA_OVERRIDE_GFX_VERSION=11.0.0 HIP_VISIBLE_DEVICES=0 GPU_DEVICE_ORDINAL=0 $(LLAMA_CLI) \
@@ -56,6 +56,12 @@ mytho-serve: mythomax-l2-13b/model.gguf
 	  --host 0.0.0.0 --port $(PORT) \
 	  --repeat-penalty 1.05 --min-p 0.0 \
 	  2>&1 | tee mytho-serve.log
+
+inference:
+	ansible-playbook ../setup-system/inference.yml -c local -K
+
+claude:
+	sudo -E claude
 
 clean:
 	rm -f */model.gguf
@@ -107,4 +113,4 @@ qwen3-coder-30b-a3b-instruct/model.gguf:
 
 gpt-oss-20b/model.gguf:
 	@mkdir -p gpt-oss-20b
-	wget -O $@ https://huggingface.co/openai/gpt-oss-20b/resolve/main/gpt-oss-20b-Q4_K_M.gguf
+	wget -O $@ https://huggingface.co/bartowski/openai_gpt-oss-20b-GGUF/resolve/main/openai_gpt-oss-20b-Q4_K_M.gguf
