@@ -1,13 +1,14 @@
 # models/Makefile
 include common.mk
+include selected.mk
 
-MODEL ?= qwen3-30b-a3b-instruct-2507
+MODEL ?= $(SELECTED_MODEL)
 MODEL_FILE ?= $(MODEL)/model.gguf
 
 # Per-model overrides if present
 -include $(MODEL)/params.mk
 
-.PHONY: chat serve bench list clean mytho mytho-serve
+.PHONY: chat serve bench list clean mytho mytho-serve model
 
 chat: $(MODEL_FILE)
 	HSA_OVERRIDE_GFX_VERSION=11.0.0 HIP_VISIBLE_DEVICES=0 GPU_DEVICE_ORDINAL=0 $(LLAMA_CLI) \
@@ -37,6 +38,9 @@ bench: $(MODEL_FILE)
 list:
 	@find . -maxdepth 1 -mindepth 1 -type d ! -name ".git" \
 	 | sed 's|^\./||' | sort
+
+model:
+	python3 select_model.py
 
 mytho: mythomax-l2-13b/model.gguf
 	$(LLAMA_CLI) \
@@ -100,3 +104,7 @@ qwen3-30b-a3b-instruct-2507/model.gguf:
 qwen3-coder-30b-a3b-instruct/model.gguf:
 	@mkdir -p qwen3-coder-30b-a3b-instruct
 	wget -O $@ https://huggingface.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/resolve/main/Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf
+
+gpt-oss-20b/model.gguf:
+	@mkdir -p gpt-oss-20b
+	wget -O $@ https://huggingface.co/openai/gpt-oss-20b/resolve/main/gpt-oss-20b-Q4_K_M.gguf
