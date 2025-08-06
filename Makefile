@@ -7,7 +7,7 @@ MODEL_FILE ?= $(MODEL)/model.gguf
 # Per-model overrides if present
 -include $(MODEL)/params.mk
 
-.PHONY: chat serve bench list clean
+.PHONY: chat serve bench list clean mytho mytho-serve
 
 chat: $(MODEL_FILE)
 	HSA_OVERRIDE_GFX_VERSION=11.0.0 HIP_VISIBLE_DEVICES=0 GPU_DEVICE_ORDINAL=0 $(LLAMA_CLI) \
@@ -24,7 +24,7 @@ serve: $(MODEL_FILE)
 	  --host 0.0.0.0 --port $(PORT) \
 	  --reverse-prompt "<|im_end|>" --reverse-prompt "</tool_call>" \
 	  --repeat-penalty 1.05 --min-p 0.0 \
-	  $(FLASH_ATTN) $(SPLIT_MODE) 2>&1 | tee serve.log | grep -E "^(main: (HTTP server is listening|model loaded|server is listening)|srv.*slots.*idle)"
+	  $(FLASH_ATTN) $(SPLIT_MODE) 2>&1 | tee serve.log
 
 bench: $(MODEL_FILE)
 	@echo "=== Benchmarking tokens/sec for $(MODEL) ==="
@@ -37,6 +37,21 @@ bench: $(MODEL_FILE)
 list:
 	@find . -maxdepth 1 -mindepth 1 -type d ! -name ".git" \
 	 | sed 's|^\./||' | sort
+
+mytho: mythomax-l2-13b/model.gguf
+	$(LLAMA_CLI) \
+	  -m mythomax-l2-13b/model.gguf \
+	  -i \
+	  -t $(THREADS) -c $(CTX) -b $(BATCH) -ngl 0 \
+	  --temp $(TEMP) --top-k $(TOPK) --top-p $(TOPP) --min-p $(MINP) --seed $(SEED)
+
+mytho-serve: mythomax-l2-13b/model.gguf
+	$(LLAMA_SERVER) \
+	  -m mythomax-l2-13b/model.gguf \
+	  -t $(THREADS) -c $(CTX) -b $(BATCH) -ngl 0 \
+	  --host 0.0.0.0 --port $(PORT) \
+	  --repeat-penalty 1.05 --min-p 0.0 \
+	  2>&1 | tee mytho-serve.log
 
 clean:
 	rm -f */model.gguf
