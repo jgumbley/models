@@ -25,6 +25,7 @@ serve: $(MODEL_FILE)
 	  --host 0.0.0.0 --port $(PORT) \
 	  --reverse-prompt "<|im_end|>" --reverse-prompt "</tool_call>" \
 	  --repeat-penalty 1.05 --min-p 0.0 \
+	  --n-predict 4000 \
 	  $(FLASH_ATTN) $(SPLIT_MODE) 2>&1 | tee serve.log
 
 bench: $(MODEL_FILE)
@@ -113,4 +114,4 @@ qwen3-coder-30b-a3b-instruct/model.gguf:
 
 gpt-oss-20b/model.gguf:
 	@mkdir -p gpt-oss-20b
-	wget -O $@ https://huggingface.co/bartowski/openai_gpt-oss-20b-GGUF/resolve/main/openai_gpt-oss-20b-Q4_K_M.gguf
+	wget -O $@ https://huggingface.co/bartowski/openai_gpt-oss-20b-GGUF/resolve/main/openai_gpt-oss-20b-bf16.gguf
