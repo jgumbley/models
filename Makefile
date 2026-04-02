@@ -8,7 +8,7 @@ MODEL_FILE ?= $(MODEL)/model.gguf
 # Per-model overrides if present
 -include $(MODEL)/params.mk
 
-.PHONY: chat serve bench list clean mytho mytho-serve model inference claude
+.PHONY: chat serve bench list clean mytho mytho-serve model setup check-ansible claude
 
 chat: $(MODEL_FILE)
 	HSA_OVERRIDE_GFX_VERSION=11.0.0 HIP_VISIBLE_DEVICES=0 GPU_DEVICE_ORDINAL=0 $(LLAMA_CLI) \
@@ -58,8 +58,11 @@ mytho-serve: mythomax-l2-13b/model.gguf
 	  --repeat-penalty 1.05 --min-p 0.0 \
 	  2>&1 | tee mytho-serve.log
 
-inference:
-	ansible-playbook ../setup-system/inference.yml -c local -K
+setup:
+	ansible-playbook inference.yml -c local -K
+
+check-ansible:
+	ansible-playbook inference.yml -c local --syntax-check
 
 claude:
 	sudo -E claude

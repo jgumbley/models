@@ -129,43 +129,6 @@
     PATH: "/opt/rocm/bin:{{ ansible_env.PATH }}"
   become: yes
 
-# btop Installation - Always from scratch with ROCm support
-- name: Remove distro btop package if present
-  apt:
-    name: btop
-    state: absent
-  become: yes
-
-- name: Remove existing btop directory
-  file:
-    path: /opt/btop
-    state: absent
-  become: yes
-
-- name: Clone btop repository from latest HEAD
-  git:
-    repo: https://github.com/aristocratos/btop.git
-    dest: /opt/btop
-    version: HEAD
-    force: yes
-  become: yes
-
-- name: Build btop with ROCm GPU support
-  command: make GPU_SUPPORT=true ROCM_PATH=/opt/rocm
-  args:
-    chdir: /opt/btop
-  environment:
-    ROCM_PATH: /opt/rocm
-    HIP_PATH: /opt/rocm
-    PATH: "/opt/rocm/bin:{{ ansible_env.PATH }}"
-  become: yes
-
-- name: Install btop with ROCm support
-  command: make install PREFIX=/usr/local
-  args:
-    chdir: /opt/btop
-  become: yes
-
 # Additional monitoring tools
 - name: Install additional monitoring tools
   apt:
@@ -179,27 +142,6 @@
     state: present
   become: yes
 
-# Asterisk PBX Installation
-- name: Install Asterisk PBX packages
-  apt:
-    name:
-      - asterisk
-      - asterisk-core-sounds-en
-      - asterisk-core-sounds-en-gsm
-      - asterisk-moh-opsound-gsm
-      - asterisk-modules
-      - asterisk-config
-    state: present
-    update_cache: yes
-  become: yes
-
-- name: Start and enable Asterisk service
-  systemd:
-    name: asterisk
-    enabled: yes
-    state: started
-  become: yes
-
 # User permissions and system configuration
 - name: Add user to render and video groups for GPU access
   user:
@@ -207,38 +149,6 @@
     groups: render,video
     append: yes
   become: yes
-
-# GPU Performance Settings
-- name: Set GPU power management to performance mode
-  shell: echo "performance" > /sys/class/drm/card{{ item }}/device/power_dpm_force_performance_level
-  become: yes
-  loop: [0, 1]
-  failed_when: false
-
-- name: Set GPU power profile to compute workload
-  shell: echo "1" > /sys/class/drm/card{{ item }}/device/pp_compute_power_profile
-  become: yes
-  loop: [0, 1]
-  failed_when: false
-
-- name: Set GPU memory clock to high performance
-  shell: echo "high" > /sys/class/drm/card{{ item }}/device/power_dpm_state
-  become: yes
-  loop: [0, 1]
-  failed_when: false
-
-# CPU Performance Settings
-- name: Set CPU governor to performance mode
-  shell: echo "performance" > /sys/devices/system/cpu/cpu{{ item }}/cpufreq/scaling_governor
-  become: yes
-  loop: "{{ range(0, ansible_processor_vcpus) | list }}"
-  failed_when: false
-
-- name: Set AMD P-State energy performance preference to performance
-  shell: echo "performance" > /sys/devices/system/cpu/cpu{{ item }}/cpufreq/energy_performance_preference
-  become: yes
-  loop: "{{ range(0, ansible_processor_vcpus) | list }}"
-  failed_when: false
 
 # Create symlinks for easy access
 # whisper.cpp Installation - Always from scratch
