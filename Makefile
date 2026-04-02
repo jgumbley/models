@@ -1,4 +1,5 @@
 # models/Makefile
+include defaults.mk
 include common.mk
 include selected.mk
 
@@ -8,25 +9,28 @@ MODEL_FILE ?= $(MODEL)/model.gguf
 # Per-model overrides if present
 -include $(MODEL)/params.mk
 
-.PHONY: chat serve bench list clean mytho mytho-serve model setup check-ansible claude
+.PHONY: chat chat-help serve bench list clean mytho mytho-serve model setup check-ansible claude
 
 chat: $(MODEL_FILE)
 	HSA_OVERRIDE_GFX_VERSION=11.0.0 HIP_VISIBLE_DEVICES=0 GPU_DEVICE_ORDINAL=0 $(LLAMA_CLI) \
 	  -m $(MODEL_FILE) \
-	  -i \
+	  --conversation \
 	  -t $(THREADS) -c $(CTX) -b $(BATCH) -ngl $(NGL) \
 	  --temp $(TEMP) --top-k $(TOPK) --top-p $(TOPP) --min-p $(MINP) --seed $(SEED) \
 	  $(FLASH_ATTN) $(SPLIT_MODE)
 
+chat-help:
+	$(LLAMA_CLI) -h
+
 serve: $(MODEL_FILE)
-	HSA_OVERRIDE_GFX_VERSION=11.0.0 HIP_VISIBLE_DEVICES=0 GPU_DEVICE_ORDINAL=0 $(LLAMA_SERVER) \
+	bash -o pipefail -lc 'HSA_OVERRIDE_GFX_VERSION=11.0.0 HIP_VISIBLE_DEVICES=0 GPU_DEVICE_ORDINAL=0 $(LLAMA_SERVER) \
 	  -m $(MODEL_FILE) \
 	  -t $(THREADS) -c $(CTX) -b $(BATCH) -ngl $(NGL) \
 	  --host 0.0.0.0 --port $(PORT) \
-	  --reverse-prompt "<|im_end|>" --reverse-prompt "</tool_call>" \
+	  --reverse-prompt "<|im_end|>,</tool_call>" \
 	  --repeat-penalty 1.05 --min-p 0.0 \
 	  --n-predict 4000 \
-	  $(FLASH_ATTN) $(SPLIT_MODE) 2>&1 | tee serve.log
+	  $(FLASH_ATTN) $(SPLIT_MODE) 2>&1 | tee serve.log'
 
 bench: $(MODEL_FILE)
 	@echo "=== Benchmarking tokens/sec for $(MODEL) ==="
@@ -67,7 +71,7 @@ check-ansible:
 claude:
 	sudo -E claude
 
-clean:
+clean::
 	rm -f */model.gguf
 
 # File targets for auto-download
