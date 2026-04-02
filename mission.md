@@ -1,19 +1,24 @@
 # Mission
 
-Make this `models` repo self-contained for local inference setup.
+Keep this `models` repo self-contained for local Gemma 4 inference.
 
-## Current objective
+## Scope
 
-- Remove any dependency on `../setup-system`.
-- Keep Gemma 4 26B support in place.
+- Gemma 4 only.
 - Use the local Ansible content in this repo to configure inference.
-- Get the local inference setup working on ROCm 6 first.
-- Upgrade ROCm step by step only after the ROCm 6 path is working.
+- Keep all execution routed through `make`.
+- Keep `defaults.mk` for runtime defaults and `common.mk` for shared make targets.
 
-## Current playbook scope
+## Current baseline
 
+- The repo no longer depends on `../setup-system`.
 - `make setup` uses the repo-local playbook.
-- `make check-ansible` validates the local Ansible entrypoint before a full setup run.
-- Invocation logic stays local to this repo.
-- Unrelated Asterisk installation and service management are removed from the inference playbook.
-- Non-essential GPU and CPU performance forcing are removed; only the GPU access group assignment needed for local inference remains.
+- `make check-ansible` validates the local Ansible entrypoint and passes with the ROCm 7 changes.
+- The local inference playbook now targets ROCm 7.2.1 via AMD's current apt repository flow.
+- Gemma 4 remains the only supported inference target in this repo.
+- `make digest` works.
+- The inference playbook has been trimmed to inference-related setup only.
+
+## Next step
+
+- Run `make setup` on the local host and verify `make serve` and `make chat` for Gemma 4 26B on ROCm 7.

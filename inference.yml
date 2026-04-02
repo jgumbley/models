@@ -3,6 +3,11 @@
   connection: local
   gather_facts: yes
   become: yes
+  vars:
+    rocm_release: 7.2.1
+    rocm_repo_keyring: /etc/apt/keyrings/rocm.gpg
+    rocm_repo_list: /etc/apt/sources.list.d/rocm.list
+    rocm_pin_file: /etc/apt/preferences.d/rocm-pin-600
   tasks:
     - name: Apply local inference setup
       import_tasks: inference/tasks/main.yml
