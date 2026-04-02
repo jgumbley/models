@@ -115,3 +115,7 @@ qwen3-coder-30b-a3b-instruct/model.gguf:
 gpt-oss-20b/model.gguf:
 	@mkdir -p gpt-oss-20b
 	wget -O $@ https://huggingface.co/bartowski/openai_gpt-oss-20b-GGUF/resolve/main/openai_gpt-oss-20b-bf16.gguf
+
+gemma-4-26b-a4b-it/model.gguf:
+	@mkdir -p gemma-4-26b-a4b-it
+	wget -O $@ https://huggingface.co/ggml-org/gemma-4-26B-A4B-it-GGUF/resolve/main/gemma-4-26B-A4B-it-Q4_K_M.gguf

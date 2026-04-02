@@ -2,3 +2,4 @@
 *.gguf
 issue.log
 serve.log
+__pycache__

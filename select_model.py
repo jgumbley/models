@@ -9,6 +9,7 @@ MODELS = [
     "deepseek-r1-32b",
     "deepseek-r1-qwen7b", 
     "gpt-oss-20b",
+    "gemma-4-26b-a4b-it",
     "mythomax-l2-13b",
     "qwen2.5-7b-instruct",
     "qwen2.5-coder-14b-instruct",
