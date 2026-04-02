@@ -10,7 +10,7 @@ TOPK    ?= 20
 TOPP    ?= 0.8
 MINP    ?= 0.0
 SEED    ?= -1
-PORT    ?= 8080
+PORT    ?= 8000
 NGL     ?= 40        # GPU layers for RX 7900 XTX (24GB VRAM)
 
 # Optimization flags
