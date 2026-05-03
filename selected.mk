@@ -1,1 +1,1 @@
-SELECTED_MODEL = gemma-4-26b-a4b-it
+SELECTED_MODEL = qwen3.6-27b-q5

@@ -127,6 +127,10 @@ qwen3-coder-30b-a3b-instruct/model.gguf:
 	@mkdir -p qwen3-coder-30b-a3b-instruct
 	wget -O $@ https://huggingface.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/resolve/main/Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf
 
+qwen3.6-27b-q5/model.gguf:
+	@mkdir -p qwen3.6-27b-q5
+	wget -O $@ https://huggingface.co/unsloth/Qwen3.6-27B-GGUF/resolve/main/Qwen3.6-27B-Q5_K_M.gguf
+
 gpt-oss-20b/model.gguf:
 	@mkdir -p gpt-oss-20b
 	wget -O $@ https://huggingface.co/bartowski/openai_gpt-oss-20b-GGUF/resolve/main/openai_gpt-oss-20b-bf16.gguf

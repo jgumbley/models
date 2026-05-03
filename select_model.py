@@ -18,6 +18,7 @@ MODELS = [
     "qwen3-30b-a3b-instruct-2507",
     "qwen3-32b",
     "qwen3-coder-30b-a3b-instruct",
+    "qwen3.6-27b-q5",
 ]
 
 def get_current_model():
