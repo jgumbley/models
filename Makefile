@@ -9,7 +9,7 @@ MODEL_FILE ?= $(MODEL)/model.gguf
 # Per-model overrides if present
 -include $(MODEL)/params.mk
 
-.PHONY: chat chat-help serve bench list clean gemma-clean mytho mytho-serve model setup check-ansible claude piconfig
+.PHONY: chat chat-help serve bench list clean gemma-clean kill kill-gemma mytho mytho-serve model setup check-ansible claude piconfig
 
 chat: $(MODEL_FILE)
 	HSA_OVERRIDE_GFX_VERSION=11.0.0 HIP_VISIBLE_DEVICES=0 GPU_DEVICE_ORDINAL=0 $(LLAMA_CLI) \
@@ -81,6 +81,14 @@ clean::
 
 gemma-clean:
 	rm -f gemma-4-26b-a4b-it/model.gguf
+
+kill:
+	pkill -TERM -f 'llama-(server|cli)'
+	$(call success)
+
+kill-gemma:
+	pkill -TERM -f 'llama-(server|cli).*gemma-4-26b-a4b-it/model\.gguf'
+	$(call success)
 
 # File targets for auto-download
 qwen2.5-7b-instruct/model.gguf:
