@@ -12,8 +12,10 @@
     name:
       - build-essential
       - cmake
+      - g++-14
       - gpg
       - git
+      - lowdown
       - wget
       - python3
       - python3-venv
@@ -193,6 +195,40 @@
     state: present
   become: yes
 
+# btop Installation - Always from scratch
+- name: Remove existing btop directory
+  file:
+    path: /opt/btop
+    state: absent
+  become: yes
+
+- name: Clone btop repository from latest HEAD
+  git:
+    repo: https://github.com/aristocratos/btop.git
+    dest: /opt/btop
+    version: HEAD
+    force: yes
+  become: yes
+
+- name: Build btop with AMD GPU support
+  command:
+    argv:
+      - make
+      - CXX=g++-14
+      - GPU_SUPPORT=true
+  args:
+    chdir: /opt/btop
+  become: yes
+
+- name: Install btop
+  command:
+    argv:
+      - make
+      - install
+  args:
+    chdir: /opt/btop
+  become: yes
+
 # User permissions and system configuration
 - name: Add user to render and video groups for GPU access
   user:
@@ -247,6 +283,11 @@
     state: link
     force: yes
   become: yes
+
+- name: Verify btop installation
+  command: /usr/local/bin/btop --version
+  register: btop_version
+  changed_when: false
 
 # Verification
 - name: Verify ROCm installation

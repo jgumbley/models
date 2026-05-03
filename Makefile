@@ -9,7 +9,7 @@ MODEL_FILE ?= $(MODEL)/model.gguf
 # Per-model overrides if present
 -include $(MODEL)/params.mk
 
-.PHONY: chat chat-help serve bench list clean mytho mytho-serve model setup check-ansible claude
+.PHONY: chat chat-help serve bench list clean gemma-clean mytho mytho-serve model setup check-ansible claude piconfig
 
 chat: $(MODEL_FILE)
 	HSA_OVERRIDE_GFX_VERSION=11.0.0 HIP_VISIBLE_DEVICES=0 GPU_DEVICE_ORDINAL=0 $(LLAMA_CLI) \
@@ -68,11 +68,19 @@ setup:
 check-ansible:
 	ansible-playbook inference.yml -c local --syntax-check
 
+piconfig:
+	@mkdir -p "$(HOME)/.pi/agent"
+	@cp pi.models.json "$(HOME)/.pi/agent/models.json"
+	$(call success)
+
 claude:
 	sudo -E claude
 
 clean::
 	rm -f */model.gguf
+
+gemma-clean:
+	rm -f gemma-4-26b-a4b-it/model.gguf
 
 # File targets for auto-download
 qwen2.5-7b-instruct/model.gguf:
@@ -125,4 +133,4 @@ gpt-oss-20b/model.gguf:
 
 gemma-4-26b-a4b-it/model.gguf:
 	@mkdir -p gemma-4-26b-a4b-it
-	wget -O $@ https://huggingface.co/ggml-org/gemma-4-26B-A4B-it-GGUF/resolve/main/gemma-4-26B-A4B-it-Q4_K_M.gguf
+	wget -O $@ https://huggingface.co/DevQuasar/google.gemma-4-26B-A4B-it-GGUF/resolve/main/google.gemma-4-26B-A4B-it.Q5_K_M.gguf
